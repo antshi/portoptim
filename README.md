@@ -62,6 +62,7 @@ rets_m <- calc_rets(prices_m)
 sigma_mat <- cov(rets_m)
 port_naive <- port_optim_naive(sigma_mat)
 port_gmv <- port_optim_gmv(sigma_mat)
+port_gmv_solver <- port_optim_solver(sigma_mat, porttype = "GMV")
 
 matplot(cbind(port_naive, port_gmv), type = "l", col = c("black", "green"), lty = 1, lwd = 1, ylab = "Weights")
 legend("topleft", legend = c("Naive", "GMV"), col = c("black", "green"), lty = 1, lwd = 1)
