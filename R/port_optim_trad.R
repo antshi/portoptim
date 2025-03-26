@@ -141,10 +141,12 @@ port_optim_markowitz <- function(sigma_mat, mu_vec, rf = 0, gamma = 2) {
 #' @param mu_grid a vector of length m as the grid of expected returns,
 #' along which the capital market line is to be estimated.
 #' @param res_all a logical. If TRUE,
-#' the result includes the calculated weights and the standard deviations for the efficient frontier.
+#' the result includes the calculated weights, the expected returns,
+#' and the standard deviations for the efficient frontier.
 #' If FALSE, only the weights. Default value is FALSE.
 #'
 #' @return a pxm matrix with the weights of the efficient portfolios along mu_grid.
+#' @return a numeric vector of length m with the corresponding expected returns, actually mu_grid.
 #' @return a numeric vector of length m with the corresponding standard deviations.
 #'
 #' @examples
@@ -172,55 +174,11 @@ port_optim_eff <- function(sigma_mat, mu_vec, mu_grid, res_all = FALSE) {
   h <- 1 / (C * B - A^2) * (C * sigma_mat_inv %*% mu_vec - A * sigma_mat_inv %*% ones)
 
   weights <- h %*% mu_grid + g
-  stds <- as.numeric(sqrt(C / (C * B - A^2) * (mu_grid - A / C)^2 + 1 / C))
+  mus <- mu_grid
+  sds <- as.numeric(sqrt(C / (C * B - A^2) * (mu_grid - A / C)^2 + 1 / C))
 
   if (res_all) {
-    return(list(weights, stds))
-  } else {
-    return(weights)
-  }
-}
-
-#' CML Portfolio Optimization
-#'
-#' Calculates the weights and the standard deviations along the Capital Market Line (CML).
-#'
-#' @param sigma_mat a pxp covariance matrix of asset returns.
-#' @param mu_vec a numeric vector of length p, the expected returns.
-#' @param mu_grid a vector with length m as the grid of expected returns,
-#' along which the capital market line is to be estimated.
-#' @param rf a double, the assumed risk-free return. Default value is 0.
-#' @param res_all a logical.
-#' If TRUE, the result includes the calculated weights and the standard deviations for the CML.
-#' If FALSE, only the weights. Default value is FALSE.
-#'
-#' @return a pxm matrix with the weights of the CML portfolio along mu_grid.
-#' @return a vector of length m with the corresponding standard deviations.
-#'
-#' @examples
-#' data(prices_m)
-#' rets_m <- calc_rets(prices_m)
-#' sigma_mat <- cov(rets_m)
-#' mu_vec <- mu_estim_wrapper(rets_m, mu_estim_ml)
-#' mu_grid <- seq(0.8 * min(mu_vec), 1.2 * max(mu_vec), length.out = 50)
-#' port_cml <- port_optim_cml(sigma_mat, mu_vec, mu_grid)
-#' port_cml_all <- port_optim_cml(sigma_mat, mu_vec, mu_grid, res_all = TRUE)
-#'
-#' @export port_optim_cml
-port_optim_cml <- function(sigma_mat, mu_vec, mu_grid, rf = 0, res_all = FALSE) {
-  if (any(diag(sigma_mat) <= 0)) stop("Covariance matrix must be positive definite.")
-
-  mu_vec_excess <- mu_vec - rf
-  weights_tang <- port_optim_tang(sigma_mat, mu_vec, rf)
-  mu_tang <- as.numeric(weights_tang %*% mu_vec_excess)
-  sd_tang <- as.numeric(sqrt(t(weights_tang) %*% sigma_mat %*% weights_tang))
-  cml_b <- sd_tang / (mu_tang - rf)
-  cml_a <- -rf * cml_b
-  stds <- cml_a + cml_b * mu_grid
-  weights <- as.matrix(mu_grid / mu_tang) %*% t(weights_tang)
-
-  if (res_all) {
-    return(list(weights, stds))
+    return(list(weights, mus, sds))
   } else {
     return(weights)
   }

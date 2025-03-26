@@ -15,11 +15,14 @@ port_optim_eff(sigma_mat, mu_vec, mu_grid, res_all = FALSE)
 along which the capital market line is to be estimated.}
 
 \item{res_all}{a logical. If TRUE,
-the result includes the calculated weights and the standard deviations for the efficient frontier.
+the result includes the calculated weights, the expected returns,
+and the standard deviations for the efficient frontier.
 If FALSE, only the weights. Default value is FALSE.}
 }
 \value{
 a pxm matrix with the weights of the efficient portfolios along mu_grid.
+
+a numeric vector of length m with the corresponding expected returns, actually mu_grid.
 
 a numeric vector of length m with the corresponding standard deviations.
 }
