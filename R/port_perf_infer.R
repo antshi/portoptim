@@ -90,10 +90,10 @@ boot_param <- function(rets, boot_reps, sample_size, type = calc_sr) {
 #' port_naive <- port_optim_naive(sigma_mat)
 #' port_tang <- port_optim_tang(sigma_mat, mu_vec)
 #' port_rets <- cbind(calc_port_rets(port_naive, rets_m), calc_port_rets(port_tang, rets_m))
-#' ftest_res <- f_test_rets(port_rets)
+#' ftest_res <- f_test(port_rets)
 #'
-#' @export f_test_rets
-f_test_rets <- function(rets) {
+#' @export f_test
+f_test <- function(rets) {
   rets <- as.matrix(rets)
   result <- stats::var.test(rets[, 1], rets[, 2])
   results_list <-
